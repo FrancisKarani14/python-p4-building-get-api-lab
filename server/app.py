@@ -18,21 +18,46 @@ db.init_app(app)
 def index():
     return '<h1>Bakery GET API</h1>'
 
+
 @app.route('/bakeries')
 def bakeries():
-    return ''
+    bakeries = [bakery.to_dict() for bakery in Bakery.query.all()]
+    response = make_response(
+        jsonify(bakeries),
+        200
+    )
+    return response
+
 
 @app.route('/bakeries/<int:id>')
 def bakery_by_id(id):
-    return ''
+    bakery = Bakery.query.get_or_404(id)  # returns 404 if not found
+    response = make_response(
+        jsonify(bakery.to_dict()),  # SerializerMixin handles baked_goods
+        200
+    )
+    return response
+
 
 @app.route('/baked_goods/by_price')
 def baked_goods_by_price():
-    return ''
+    baked_goods = BakedGood.query.order_by(BakedGood.price.desc()).all()
+    response = make_response(
+        jsonify([bg.to_dict() for bg in baked_goods]),
+        200
+    )
+    return response
+
 
 @app.route('/baked_goods/most_expensive')
 def most_expensive_baked_good():
-    return ''
+    baked_good = BakedGood.query.order_by(BakedGood.price.desc()).first()
+    response = make_response(
+        jsonify(baked_good.to_dict()),
+        200
+    )
+    return response
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
